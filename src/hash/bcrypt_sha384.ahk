@@ -1,4 +1,4 @@
-MsgBox % bcrypt_sha384("The quick brown fox jumps over the lazy dog")
+﻿MsgBox % bcrypt_sha384("The quick brown fox jumps over the lazy dog")
 ; ==> ca737f1014a48f4c0b6dd43cb177b0afd9e5169367544c494011e3317dbf9a509cb1e5dc1e85a941bbee3d7f2afbc9b1
 
 

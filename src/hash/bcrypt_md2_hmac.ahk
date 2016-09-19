@@ -1,4 +1,4 @@
-MsgBox % bcrypt_md2_hmac("The quick brown fox jumps over the lazy dog", "Secret Salt")
+﻿MsgBox % bcrypt_md2_hmac("The quick brown fox jumps over the lazy dog", "Secret Salt")
 ; ==> 6c05fa7a6f6de43ea70cf4e20fc1c648
 
 

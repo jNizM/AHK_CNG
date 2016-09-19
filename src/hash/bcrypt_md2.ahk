@@ -1,4 +1,4 @@
-MsgBox % bcrypt_md2("The quick brown fox jumps over the lazy dog")
+﻿MsgBox % bcrypt_md2("The quick brown fox jumps over the lazy dog")
 ; ==> 03d85a0d629d2c442e987525319fc471
 
 
