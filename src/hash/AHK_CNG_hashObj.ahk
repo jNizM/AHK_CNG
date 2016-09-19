@@ -1,34 +1,34 @@
 ﻿class hash { ; to extend/be embedded in main obj
     
-    md2(string){
-        return this.hashThis(string,"MD2")
+    md2(string,file=0){
+        return this.hashThis(string,"MD2",file)
     }
     
-    md4(string){
-        return this.hashThis(string,"MD4")
+    md4(string,file=0){
+        return this.hashThis(string,"MD4",file)
     }
     
-    md5(string){
-        return this.hashThis(string,"MD5")
+    md5(string,file=0){
+        return this.hashThis(string,"MD5",file)
     }
     
-    sha1(string){
-        return this.hashThis(string,"SHA1")
+    sha1(string,file=0){
+        return this.hashThis(string,"SHA1",file)
     }
     
-    sha256(string){
-        return this.hashThis(string,"SHA256")
+    sha256(string,file=0){
+        return this.hashThis(string,"SHA256",file)
     }
     
-    sha384(string){
-        return this.hashThis(string,"SHA384")
+    sha384(string,file=0){
+        return this.hashThis(string,"SHA384",file)
     }
     
-    sha512(string){
-        return this.hashThis(string,"SHA512")
+    sha512(string,file=0){
+        return this.hashThis(string,"SHA512",file)
     }
     
-    hashThis(string,BCRYPT_ALGORITHM){
+    hashThis(string,BCRYPT_ALGORITHM,file=0){
         static BCRYPT_OBJECT_LENGTH := "ObjectLength"
         static BCRYPT_HASH_LENGTH   := "HashDigestLength"
         hash:=""
@@ -49,9 +49,18 @@
         if (NT_STATUS := DllCall("bcrypt\BCryptCreateHash", "ptr", hAlgo, "ptr*", hHash, "ptr", &pbHashObject, "uint", cbHashObject, "ptr", 0, "uint", 0, "uint", 0) != 0)
             throw Exception("BCryptCreateHash: " NT_STATUS, -1)
         
-        VarSetCapacity(pbInput, cbInput := StrPut(string, "UTF-8"), 0) && StrPut(string, &pbInput, "UTF-8")
-        if (NT_STATUS := DllCall("bcrypt\BCryptHashData", "ptr", hHash, "ptr", &pbInput, "uint", cbInput - 1, "uint", 0) != 0)
-            throw Exception("BCryptHashData: " NT_STATUS, -1)
+        if(!file){
+            VarSetCapacity(pbInput, cbInput := StrPut(string, "UTF-8"), 0) && StrPut(string, &pbInput, "UTF-8")
+            if (NT_STATUS := DllCall("bcrypt\BCryptHashData", "ptr", hHash, "ptr", &pbInput, "uint", cbInput - 1, "uint", 0) != 0)
+                throw Exception("BCryptHashData: " NT_STATUS, -1)
+        }else{
+            if !(f := FileOpen(string, "r", "UTF-8"))
+                throw Exception("Failed to open file: " string, -1)
+            while !(f.AtEOF) && (dataread := f.RawRead(data, 262144))
+                if (NT_STATUS := DllCall("bcrypt\BCryptHashData", "ptr", hHash, "ptr", &data, "uint", dataread, "uint", 0) != 0)
+                    throw Exception("BCryptHashData: " NT_STATUS, -1)
+            f.Close()
+        }
         
         VarSetCapacity(pbHash, cbHash, 0)
         if (NT_STATUS := DllCall("bcrypt\BCryptFinishHash", "ptr", hHash, "ptr", &pbHash, "uint", cbHash, "uint", 0) != 0)
@@ -70,35 +79,35 @@
 
     class hmac {
         
-        md2(string,hmac){
-            return this.hmacThis(string,hmac,"MD2")
+        md2(string,hmac,file=0){
+            return this.hmacThis(string,hmac,"MD2",file)
         }
 
-        md4(string,hmac){
-            return this.hmacThis(string,hmac,"MD4")
+        md4(string,hmac,file=0){
+            return this.hmacThis(string,hmac,"MD4",file)
         }
 
-        md5(string,hmac){
-            return this.hmacThis(string,hmac,"MD5")
+        md5(string,hmac,file=0){
+            return this.hmacThis(string,hmac,"MD5",file)
         }
 
-        sha1(string,hmac){
-            return this.hmacThis(string,hmac,"SHA1")
+        sha1(string,hmac,file=0){
+            return this.hmacThis(string,hmac,"SHA1",file)
         }
 
-        sha256(string,hmac){
-            return this.hmacThis(string,hmac,"SHA256")
+        sha256(string,hmac,file=0){
+            return this.hmacThis(string,hmac,"SHA256",file)
         }
 
-        sha384(string,hmac){
-            return this.hmacThis(string,hmac,"SHA384")
+        sha384(string,hmac,file=0){
+            return this.hmacThis(string,hmac,"SHA384",file)
         }
 
-        sha512(string,hmac){
-            return this.hmacThis(string,hmac,"SHA512")
+        sha512(string,hmac,file=0){
+            return this.hmacThis(string,hmac,"SHA512",file)
         }
         
-        hmacThis(string,hmac,BCRYPT_ALGORITHM){
+        hmacThis(string,hmac,BCRYPT_ALGORITHM,file=0){
             
             static BCRYPT_ALG_HANDLE_HMAC_FLAG := 0x00000008
             static BCRYPT_OBJECT_LENGTH        := "ObjectLength"
@@ -121,9 +130,18 @@
             if (NT_STATUS := DllCall("bcrypt\BCryptCreateHash", "ptr", hAlgo, "ptr*", hHash, "ptr", &pbHashObject, "uint", cbHashObject, "ptr", &pbSecret, "uint", cbSecret - 1, "uint", 0) != 0)
                 throw Exception("BCryptCreateHash: " NT_STATUS, -1)
             
-            VarSetCapacity(pbInput, cbInput := StrPut(string, "UTF-8"), 0) && StrPut(string, &pbInput, "UTF-8")
-            if (NT_STATUS := DllCall("bcrypt\BCryptHashData", "ptr", hHash, "ptr", &pbInput, "uint", cbInput - 1, "uint", 0) != 0)
-                throw Exception("BCryptHashData: " NT_STATUS, -1)
+            if(!file){
+                VarSetCapacity(pbInput, cbInput := StrPut(string, "UTF-8"), 0) && StrPut(string, &pbInput, "UTF-8")
+                if (NT_STATUS := DllCall("bcrypt\BCryptHashData", "ptr", hHash, "ptr", &pbInput, "uint", cbInput - 1, "uint", 0) != 0)
+                    throw Exception("BCryptHashData: " NT_STATUS, -1)
+            }else{
+                if !(f := FileOpen(string, "r", "UTF-8"))
+                    throw Exception("Failed to open file: " string, -1)
+                while !(f.AtEOF) && (dataread := f.RawRead(data, 262144))
+                    if (NT_STATUS := DllCall("bcrypt\BCryptHashData", "ptr", hHash, "ptr", &data, "uint", dataread, "uint", 0) != 0)
+                        throw Exception("BCryptHashData: " NT_STATUS, -1)
+                f.Close()
+            }
             
             VarSetCapacity(pbHash, cbHash, 0)
             if (NT_STATUS := DllCall("bcrypt\BCryptFinishHash", "ptr", hHash, "ptr", &pbHash, "uint", cbHash, "uint", 0) != 0)
