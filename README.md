@@ -61,7 +61,7 @@ MsgBox % bcrypt_sha384_hmac("The quick brown fox jumps over the lazy dog", "Secr
 MsgBox % bcrypt_sha512("The quick brown fox jumps over the lazy dog")
 ; ==> 07e547d9586f6a73f73fbac0435ed76951218fb7d0c8d788a309d785436bbb642e93a252a954f23912547d1e8a3b5ed6e1bfd7097821233fa0538f3db854fee6
 
-MsgBox % bcrypt_sha256_hmac("The quick brown fox jumps over the lazy dog", "Secret Salt")
+MsgBox % bcrypt_sha512_hmac("The quick brown fox jumps over the lazy dog", "Secret Salt")
 ; ==> 8ba0777b278b406b07df08150b98d2c57c68f83a980088e3011f76ea8e6d26b84244a678218408e97066d8dfe8aee20569044d214131327b016ea69a487ef471
 ```
 
