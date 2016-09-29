@@ -31,7 +31,7 @@ bcrypt_sha1(string)
 
     VarSetCapacity(pbHash, cbHash, 0)
     if (NT_STATUS := DllCall("bcrypt\BCryptFinishHash", "ptr", hHash, "ptr", &pbHash, "uint", cbHash, "uint", 0) != 0)
-        throw Exception("BCryptHashData: " NT_STATUS, -1)
+        throw Exception("BCryptFinishHash: " NT_STATUS, -1)
 
     loop % cbHash
         hash .= Format("{:02x}", NumGet(pbHash, A_Index - 1, "UChar"))
