@@ -28,7 +28,6 @@ bcrypt_md4_hmac(string, hmac)
     loop % cbHash
         o .= Format("{:02x}", NumGet(pbHash, A_Index - 1, "UChar"))
 
-    DllCall("bcrypt\BCryptDestroyHash", "ptr", hHash)
     DllCall("bcrypt\BCryptCloseAlgorithmProvider", "ptr", hAlgo, "uint", 0)
     DllCall("FreeLibrary", "ptr", hBCRYPT)
 
