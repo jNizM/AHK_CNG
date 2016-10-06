@@ -24,60 +24,60 @@ class bcrypt
 {
     static BCRYPT_OBJECT_LENGTH        := "ObjectLength"
     static BCRYPT_HASH_LENGTH          := "HashDigestLength"
-	static BCRYPT_ALG_HANDLE_HMAC_FLAG := 0x00000008
-	static hBCRYPT := DllCall("LoadLibrary", "str", "bcrypt.dll", "ptr")
+    static BCRYPT_ALG_HANDLE_HMAC_FLAG := 0x00000008
+    static hBCRYPT := DllCall("LoadLibrary", "str", "bcrypt.dll", "ptr")
 
-	hash(String, AlgID)
-	{
-		AlgID         := this.CheckAlgorithm(AlgID)
-		ALG_HANDLE    := this.BCryptOpenAlgorithmProvider(AlgID)
-		OBJECT_LENGTH := this.BCryptGetProperty(ALG_HANDLE, this.BCRYPT_OBJECT_LENGTH, 4)
-		HASH_LENGTH   := this.BCryptGetProperty(ALG_HANDLE, this.BCRYPT_HASH_LENGTH, 4)
-		HASH_HANDLE   := this.BCryptCreateHash(ALG_HANDLE, HASH_OBJECT, OBJECT_LENGTH)
-		this.BCryptHashData(HASH_HANDLE, STRING)
-		HASH_LENGTH   := this.BCryptFinishHash(HASH_HANDLE, HASH_LENGTH, HASH_DATA)
-		hash          := this.CalcHash(HASH_DATA, HASH_LENGTH)
-		this.DestroyHash(HASH_HANDLE)
+    hash(String, AlgID)
+    {
+        AlgID         := this.CheckAlgorithm(AlgID)
+        ALG_HANDLE    := this.BCryptOpenAlgorithmProvider(AlgID)
+        OBJECT_LENGTH := this.BCryptGetProperty(ALG_HANDLE, this.BCRYPT_OBJECT_LENGTH, 4)
+        HASH_LENGTH   := this.BCryptGetProperty(ALG_HANDLE, this.BCRYPT_HASH_LENGTH, 4)
+        HASH_HANDLE   := this.BCryptCreateHash(ALG_HANDLE, HASH_OBJECT, OBJECT_LENGTH)
+        this.BCryptHashData(HASH_HANDLE, STRING)
+        HASH_LENGTH   := this.BCryptFinishHash(HASH_HANDLE, HASH_LENGTH, HASH_DATA)
+        hash          := this.CalcHash(HASH_DATA, HASH_LENGTH)
+        this.DestroyHash(HASH_HANDLE)
         this.CloseAlgorithmProvider(ALG_HANDLE)
-		return hash
-	}
+        return hash
+    }
 
-	hmac(String, Hmac, AlgID)
-	{
-		AlgID         := this.CheckAlgorithm(AlgID)
-		ALG_HANDLE    := this.BCryptOpenAlgorithmProvider(AlgID, this.BCRYPT_ALG_HANDLE_HMAC_FLAG)
-		OBJECT_LENGTH := this.BCryptGetProperty(ALG_HANDLE, this.BCRYPT_OBJECT_LENGTH, 4)
-		HASH_LENGTH   := this.BCryptGetProperty(ALG_HANDLE, this.BCRYPT_HASH_LENGTH, 4)
-		HASH_HANDLE   := this.BCryptCreateHmac(ALG_HANDLE, HMAC, HASH_OBJECT, OBJECT_LENGTH)
-		this.BCryptHashData(HASH_HANDLE, STRING)
-		HASH_LENGTH   := this.BCryptFinishHash(HASH_HANDLE, HASH_LENGTH, HASH_DATA)
-		hash          := this.CalcHash(HASH_DATA, HASH_LENGTH)
-		this.DestroyHash(HASH_HANDLE)
+    hmac(String, Hmac, AlgID)
+    {
+        AlgID         := this.CheckAlgorithm(AlgID)
+        ALG_HANDLE    := this.BCryptOpenAlgorithmProvider(AlgID, this.BCRYPT_ALG_HANDLE_HMAC_FLAG)
+        OBJECT_LENGTH := this.BCryptGetProperty(ALG_HANDLE, this.BCRYPT_OBJECT_LENGTH, 4)
+        HASH_LENGTH   := this.BCryptGetProperty(ALG_HANDLE, this.BCRYPT_HASH_LENGTH, 4)
+        HASH_HANDLE   := this.BCryptCreateHmac(ALG_HANDLE, HMAC, HASH_OBJECT, OBJECT_LENGTH)
+        this.BCryptHashData(HASH_HANDLE, STRING)
+        HASH_LENGTH   := this.BCryptFinishHash(HASH_HANDLE, HASH_LENGTH, HASH_DATA)
+        hash          := this.CalcHash(HASH_DATA, HASH_LENGTH)
+        this.DestroyHash(HASH_HANDLE)
         this.CloseAlgorithmProvider(ALG_HANDLE)
-		return hash
-	}
+        return hash
+    }
 
-	file(FileName, AlgID)
-	{
-		AlgID         := this.CheckAlgorithm(AlgID)
-		ALG_HANDLE    := this.BCryptOpenAlgorithmProvider(AlgID)
-		OBJECT_LENGTH := this.BCryptGetProperty(ALG_HANDLE, this.BCRYPT_OBJECT_LENGTH, 4)
-		HASH_LENGTH   := this.BCryptGetProperty(ALG_HANDLE, this.BCRYPT_HASH_LENGTH, 4)
-		HASH_HANDLE   := this.BCryptCreateHash(ALG_HANDLE, HASH_OBJECT, OBJECT_LENGTH)
-		if !(IsObject(f := FileOpen(FileName, "r", "UTF-8")))
-			throw Exception("Failed to open file: " FileName, -1)
-		while !(f.AtEOF) && (DATAREAD := f.RawRead(DATA, 262144))
-			this.BCryptHashFile(HASH_HANDLE, DATA, DATAREAD)
-		f.Close()
-		HASH_LENGTH   := this.BCryptFinishHash(HASH_HANDLE, HASH_LENGTH, HASH_DATA)
-		hash          := this.CalcHash(HASH_DATA, HASH_LENGTH)
-		this.DestroyHash(HASH_HANDLE)
+    file(FileName, AlgID)
+    {
+        AlgID         := this.CheckAlgorithm(AlgID)
+        ALG_HANDLE    := this.BCryptOpenAlgorithmProvider(AlgID)
+        OBJECT_LENGTH := this.BCryptGetProperty(ALG_HANDLE, this.BCRYPT_OBJECT_LENGTH, 4)
+        HASH_LENGTH   := this.BCryptGetProperty(ALG_HANDLE, this.BCRYPT_HASH_LENGTH, 4)
+        HASH_HANDLE   := this.BCryptCreateHash(ALG_HANDLE, HASH_OBJECT, OBJECT_LENGTH)
+        if !(IsObject(f := FileOpen(FileName, "r", "UTF-8")))
+            throw Exception("Failed to open file: " FileName, -1)
+        while !(f.AtEOF) && (DATAREAD := f.RawRead(DATA, 262144))
+            this.BCryptHashFile(HASH_HANDLE, DATA, DATAREAD)
+        f.Close()
+        HASH_LENGTH   := this.BCryptFinishHash(HASH_HANDLE, HASH_LENGTH, HASH_DATA)
+        hash          := this.CalcHash(HASH_DATA, HASH_LENGTH)
+        this.DestroyHash(HASH_HANDLE)
         this.CloseAlgorithmProvider(ALG_HANDLE)
-		return hash
-	}
+        return hash
+    }
 
-	pbkdf2(Password, Salt, AlgID, Iterations := 1024, KeySize := 16)
-	{
+    pbkdf2(Password, Salt, AlgID, Iterations := 1024, KeySize := 16)
+    {
         AlgID       := this.CheckAlgorithm(AlgID)
         ALG_HANDLE  := this.BCryptOpenAlgorithmProvider(AlgID, this.BCRYPT_ALG_HANDLE_HMAC_FLAG)
         this.BCryptDeriveKeyPBKDF2(ALG_HANDLE, Password, Salt, Iterations, KeySize, PBKDF2_DATA)
@@ -135,7 +135,7 @@ class bcrypt
     BCryptCreateHmac(BCRYPT_ALG_HANDLE, HMAC, ByRef pbHashObject, cbHashObject)
     {
         VarSetCapacity(pbHashObject, cbHashObject, 0)
-		VarSetCapacity(pbSecret, cbSecret := StrPut(hmac, "UTF-8"), 0) && StrPut(hmac, &pbSecret, "UTF-8"), cbSecret--
+        VarSetCapacity(pbSecret, cbSecret := StrPut(hmac, "UTF-8"), 0) && StrPut(hmac, &pbSecret, "UTF-8"), cbSecret--
         if (NT_STATUS := DllCall("bcrypt\BCryptCreateHash", "ptr",  BCRYPT_ALG_HANDLE
                                                           , "ptr*", BCRYPT_HASH_HANDLE
                                                           , "ptr",  &pbHashObject
@@ -161,7 +161,7 @@ class bcrypt
         return true
     }
 
-	BCryptHashFile(BCRYPT_HASH_HANDLE, pbInput, cbInput)
+    BCryptHashFile(BCRYPT_HASH_HANDLE, pbInput, cbInput)
     {
         if (NT_STATUS := DllCall("bcrypt\BCryptHashData", "ptr",  BCRYPT_HASH_HANDLE
                                                         , "ptr",  &pbInput
