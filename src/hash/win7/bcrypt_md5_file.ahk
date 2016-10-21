@@ -37,7 +37,7 @@ bcrypt_md5_file(filename)
         throw Exception("BCryptFinishHash: " NT_STATUS, -1)
 
     loop % cbHash
-        hash .= Format("{:02x}", NumGet(pbHash, A_Index - 1, "UChar"))
+        hash .= Format("{:02x}", NumGet(pbHash, A_Index - 1, "uchar"))
 
     DllCall("bcrypt\BCryptDestroyHash", "ptr", hHash)
     DllCall("bcrypt\BCryptCloseAlgorithmProvider", "ptr", hAlgo, "uint", 0)

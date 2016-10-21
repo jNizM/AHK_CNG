@@ -22,12 +22,12 @@ bcrypt_md2_hmac(string, hmac)
     if (NT_STATUS := DllCall("bcrypt\BCryptGetProperty", "ptr", hAlgo, "ptr", &BCRYPT_HASH_LENGTH, "uint*", cbHash, "uint", 4, "uint*", cbResult, "uint", 0) != 0)
         throw Exception("BCryptGetProperty: " NT_STATUS, -1)
 
-    VarSetCapacity(pbHashObject, cbHashObject, 0) && VarSetCapacity(pbSecret, cbSecret := StrPut(hmac, "UTF-8"), 0) && StrPut(hmac, &pbSecret, "UTF-8")
-    if (NT_STATUS := DllCall("bcrypt\BCryptCreateHash", "ptr", hAlgo, "ptr*", hHash, "ptr", &pbHashObject, "uint", cbHashObject, "ptr", &pbSecret, "uint", cbSecret - 1, "uint", 0) != 0)
+    VarSetCapacity(pbHashObject, cbHashObject, 0) && VarSetCapacity(pbSecret, StrPut(hmac, "UTF-8"), 0) && cbSecret := StrPut(hmac, &pbSecret, "UTF-8") - 1
+    if (NT_STATUS := DllCall("bcrypt\BCryptCreateHash", "ptr", hAlgo, "ptr*", hHash, "ptr", &pbHashObject, "uint", cbHashObject, "ptr", &pbSecret, "uint", cbSecret, "uint", 0) != 0)
         throw Exception("BCryptCreateHash: " NT_STATUS, -1)
 
-    VarSetCapacity(pbInput, cbInput := StrPut(string, "UTF-8"), 0) && StrPut(string, &pbInput, "UTF-8")
-    if (NT_STATUS := DllCall("bcrypt\BCryptHashData", "ptr", hHash, "ptr", &pbInput, "uint", cbInput - 1, "uint", 0) != 0)
+    VarSetCapacity(pbInput, StrPut(string, "UTF-8"), 0) && cbInput := StrPut(string, &pbInput, "UTF-8") - 1
+    if (NT_STATUS := DllCall("bcrypt\BCryptHashData", "ptr", hHash, "ptr", &pbInput, "uint", cbInput, "uint", 0) != 0)
         throw Exception("BCryptHashData: " NT_STATUS, -1)
 
     VarSetCapacity(pbHash, cbHash, 0)
@@ -35,7 +35,7 @@ bcrypt_md2_hmac(string, hmac)
         throw Exception("BCryptFinishHash: " NT_STATUS, -1)
 
     loop % cbHash
-        hash .= Format("{:02x}", NumGet(pbHash, A_Index - 1, "UChar"))
+        hash .= Format("{:02x}", NumGet(pbHash, A_Index - 1, "uchar"))
 
     DllCall("bcrypt\BCryptDestroyHash", "ptr", hHash)
     DllCall("bcrypt\BCryptCloseAlgorithmProvider", "ptr", hAlgo, "uint", 0)

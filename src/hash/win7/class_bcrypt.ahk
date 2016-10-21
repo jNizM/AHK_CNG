@@ -135,7 +135,7 @@ class bcrypt
     BCryptCreateHmac(BCRYPT_ALG_HANDLE, HMAC, ByRef pbHashObject, cbHashObject)
     {
         VarSetCapacity(pbHashObject, cbHashObject, 0)
-        VarSetCapacity(pbSecret, cbSecret := StrPut(hmac, "UTF-8"), 0) && StrPut(hmac, &pbSecret, "UTF-8"), cbSecret--
+        VarSetCapacity(pbSecret, StrPut(hmac, "UTF-8"), 0) && cbSecret := StrPut(hmac, &pbSecret, "UTF-8") - 1
         if (NT_STATUS := DllCall("bcrypt\BCryptCreateHash", "ptr",  BCRYPT_ALG_HANDLE
                                                           , "ptr*", BCRYPT_HASH_HANDLE
                                                           , "ptr",  &pbHashObject
@@ -152,7 +152,7 @@ class bcrypt
     ; ===========================================================================================================================
     BCryptHashData(BCRYPT_HASH_HANDLE, STRING)
     {
-        VarSetCapacity(pbInput, cbInput := StrPut(string, "UTF-8"), 0) && StrPut(string, &pbInput, "UTF-8"), cbInput--
+        VarSetCapacity(pbInput, StrPut(string, "UTF-8"), 0) && cbInput := StrPut(string, &pbInput, "UTF-8") - 1
         if (NT_STATUS := DllCall("bcrypt\BCryptHashData", "ptr",  BCRYPT_HASH_HANDLE
                                                         , "ptr",  &pbInput
                                                         , "uint", cbInput
@@ -191,8 +191,8 @@ class bcrypt
     BCryptDeriveKeyPBKDF2(BCRYPT_ALG_HANDLE, PASS, SALT, cIterations, cbDerivedKey, ByRef pbDerivedKey)
     {
         VarSetCapacity(pbDerivedKey, cbDerivedKey, 0)
-        VarSetCapacity(pbPassword, cbPassword := StrPut(PASS, "UTF-8"), 0) && StrPut(PASS, &pbPassword, "UTF-8"), cbPassword--
-        VarSetCapacity(pbSalt,     cbSalt     := StrPut(SALT, "UTF-8"), 0) && StrPut(SALT, &pbSalt,     "UTF-8"), cbSalt--
+        VarSetCapacity(pbPassword, StrPut(PASS, "UTF-8"), 0) && cbPassword := StrPut(PASS, &pbPassword, "UTF-8") - 1
+        VarSetCapacity(pbSalt,     StrPut(SALT, "UTF-8"), 0) && cbSalt :=     StrPut(SALT, &pbSalt,     "UTF-8") - 1
         if (NT_STATUS := DllCall("bcrypt\BCryptDeriveKeyPBKDF2", "ptr",   BCRYPT_ALG_HANDLE
                                                                , "ptr",   &pbPassword
                                                                , "uint",  cbPassword
@@ -249,7 +249,7 @@ class bcrypt
     CalcHash(Byref HASH_DATA, HASH_LENGTH)
     {
         loop % HASH_LENGTH
-            HASH .= Format("{:02x}", NumGet(HASH_DATA, A_Index - 1, "UChar"))
+            HASH .= Format("{:02x}", NumGet(HASH_DATA, A_Index - 1, "uchar"))
         return HASH
     }
 }

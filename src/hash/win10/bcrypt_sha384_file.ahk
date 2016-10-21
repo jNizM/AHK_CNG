@@ -6,7 +6,6 @@
 bcrypt_sha384_file(filename)
 {
     static BCRYPT_SHA384_ALGORITHM := "SHA384"
-    static BCRYPT_OBJECT_LENGTH    := "ObjectLength"
     static BCRYPT_HASH_LENGTH      := "HashDigestLength"
 
     if !(hBCRYPT := DllCall("LoadLibrary", "str", "bcrypt.dll", "ptr"))
@@ -27,7 +26,7 @@ bcrypt_sha384_file(filename)
     f.Close()
 
     loop % cbHash
-        hash .= Format("{:02x}", NumGet(pbHash, A_Index - 1, "UChar"))
+        hash .= Format("{:02x}", NumGet(pbHash, A_Index - 1, "uchar"))
 
     DllCall("bcrypt\BCryptCloseAlgorithmProvider", "ptr", hAlgo, "uint", 0)
     DllCall("FreeLibrary", "ptr", hBCRYPT)

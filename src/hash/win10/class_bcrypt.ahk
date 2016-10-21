@@ -107,7 +107,7 @@ class bcrypt
     BCryptHash(BCRYPT_ALG_HANDLE, STRING, cbOutput, ByRef pbOutput)
     {
         VarSetCapacity(pbOutput, cbOutput, 0)
-        VarSetCapacity(pbInput, cbInput := StrPut(STRING, "UTF-8"), 0) && StrPut(STRING, &pbInput,  "UTF-8"), cbInput--
+        VarSetCapacity(pbInput, StrPut(STRING, "UTF-8"), 0) && cbInput := StrPut(STRING, &pbInput,  "UTF-8") - 1
         if (NT_STATUS := DllCall("bcrypt\BCryptHash", "ptr",  BCRYPT_ALG_HANDLE
                                                     , "ptr",  0
                                                     , "uint", 0
@@ -122,8 +122,8 @@ class bcrypt
     BCryptHmac(BCRYPT_ALG_HANDLE, STRING, SALT, cbOutput, ByRef pbOutput)
     {
         VarSetCapacity(pbOutput, cbOutput, 0)
-        VarSetCapacity(pbSecret, cbSecret := StrPut(SALT, "UTF-8"), 0)   && StrPut(SALT,   &pbSecret, "UTF-8"), cbSecret--
-        VarSetCapacity(pbInput,  cbInput  := StrPut(STRING, "UTF-8"), 0) && StrPut(STRING, &pbInput,  "UTF-8"), cbInput--
+        VarSetCapacity(pbSecret, StrPut(SALT, "UTF-8"), 0)   && cbSecret := StrPut(SALT,   &pbSecret, "UTF-8") - 1
+        VarSetCapacity(pbInput,  StrPut(STRING, "UTF-8"), 0) && cbInput  := StrPut(STRING, &pbInput,  "UTF-8") - 1
         if (NT_STATUS := DllCall("bcrypt\BCryptHash", "ptr",  BCRYPT_ALG_HANDLE
                                                     , "ptr",  &pbSecret
                                                     , "uint", cbSecret
@@ -202,7 +202,7 @@ class bcrypt
     CalcHash(Byref HASH_DATA, HASH_LENGTH)
     {
         loop % HASH_LENGTH
-            HASH .= Format("{:02x}", NumGet(HASH_DATA, A_Index - 1, "UChar"))
+            HASH .= Format("{:02x}", NumGet(HASH_DATA, A_Index - 1, "uchar"))
         return HASH
     }
 }
