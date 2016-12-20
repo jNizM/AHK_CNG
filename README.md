@@ -60,3 +60,7 @@ MsgBox % bcrypt.pbkdf2("The quick brown fox jumps over the lazy dog", "Secret Sa
 
 ## Questions / Bugs / Issues
 Report any bugs or issues on the [AHK Thread](https://autohotkey.com/boards/viewtopic.php?f=6&t=23413). Same for any questions.
+
+
+## Donations
+[Donations are appreciated if I could help you](https://www.paypal.me/smithz)
