@@ -7,7 +7,8 @@ CNG is designed to be extensible at many levels and cryptography agnostic in beh
 
 ### Hashing Algorithm
 * MD2, MD4, MD5
-* SHA1, SHA256, SHA384, SHA512
+* SHA1
+* SHA2 (SHA256, SHA384, SHA512)
 * PBKDF2
 
 
@@ -43,15 +44,15 @@ MsgBox % bcrypt.pbkdf2("The quick brown fox jumps over the lazy dog", "Secret Sa
 ```
 
 
-### Source (minimum supported client)
-* for Windows 7 see here -> [src/hash/win7](src/hash/win7)
-* for Windows 10 see here -> [src/hash/win10](src/hash/win10)
+### Source
+* single functions -> [src/hash/func](src/hash/func)
+* complete class -> [src/hash/class](src/hash/class)
 
 
 ## Info
 * [AHK Thread](https://autohotkey.com/boards/viewtopic.php?f=6&t=23413)
-* [Cryptography API: Next Generation (msdn)](https://msdn.microsoft.com/en-us/library/aa376210(v=vs.85).aspx)
-* [Creating a Hash with CNG (msdn)](https://msdn.microsoft.com/en-us/library/aa376217(v=vs.85).aspx)
+* [Cryptography API: Next Generation (msdn)](https://docs.microsoft.com/en-us/windows/desktop/SecCNG/cng-portal)
+* [Creating a Hash with CNG (msdn)](https://docs.microsoft.com/en-us/windows/desktop/SecCNG/creating-a-hash-with-cng)
 
 
 ## Contributing
@@ -62,5 +63,9 @@ MsgBox % bcrypt.pbkdf2("The quick brown fox jumps over the lazy dog", "Secret Sa
 Report any bugs or issues on the [AHK Thread](https://autohotkey.com/boards/viewtopic.php?f=6&t=23413). Same for any questions.
 
 
-## Donations
+## Copyright and License
+[MIT License](LICENSE)
+
+
+## Donations (PayPal)
 [Donations are appreciated if I could help you](https://www.paypal.me/smithz)
