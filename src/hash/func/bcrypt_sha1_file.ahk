@@ -11,7 +11,7 @@ FileDelete, TestFile
 
 
 
-bcrypt_sha1_file(filename, offset := 0, length := -1, encoding := "utf-8")
+bcrypt_sha1_file(filename, bytes := 1048576 , offset := 0, length := -1, encoding := "utf-8")
 {
     static BCRYPT_SHA1_ALGORITHM := "SHA1"
     static BCRYPT_OBJECT_LENGTH  := "ObjectLength"
@@ -54,7 +54,7 @@ bcrypt_sha1_file(filename, offset := 0, length := -1, encoding := "utf-8")
 		if ((offset + length) > f.length)
 			throw Exception("Invalid parameters offset / length!", -1)
 		f.Pos(offset)
-		while (length > 262144) && (dataread := f.RawRead(data, 262144))
+		while (length > bytes) && (dataread := f.RawRead(data, bytes))
 		{
 			if (NT_STATUS := DllCall("bcrypt\BCryptHashData", "ptr", hHash, "ptr", &data, "uint", dataread, "uint", 0) != 0)
 				throw Exception("BCryptHashData: " NT_STATUS, -1)
