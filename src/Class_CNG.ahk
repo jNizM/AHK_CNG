@@ -3,7 +3,7 @@
 ;
 ; Author ....: jNizM
 ; Released ..: 2016-09-15
-; Modified ..: 2020-09-15
+; Modified ..: 2021-01-04
 ; Github ....: https://github.com/jNizM/AHK_CNG
 ; Forum .....: https://www.autohotkey.com/boards/viewtopic.php?f=6&t=23413
 ; ===============================================================================================================================
@@ -689,10 +689,21 @@ class Crypt
 		}
 
 
-		StrPutVar(String, ByRef var, Encoding)
+		StrPutVar(String, ByRef Data, Encoding)
 		{
-			VarSetCapacity(var, len := StrPut(String, Encoding) * ((Encoding = "utf-16" || Encoding = "cp1200") ? 2 : 1) - 1)
-			return StrPut(String, &var, len, Encoding)
+			if (Encoding = "hex")
+			{
+				String := InStr(String, "0x") ? SubStr(String, 3) : String
+				VarSetCapacity(Data, (Length := StrLen(String) // 2), 0)
+				loop % Length
+					NumPut("0x" SubStr(String, 2 * A_Index - 1, 2), Data, A_Index - 1, "char")
+				return Length
+			}
+			else
+			{
+				VarSetCapacity(Data, Length := StrPut(String, Encoding) * ((Encoding = "utf-16" || Encoding = "cp1200") ? 2 : 1) - 1)
+				return StrPut(String, &Data, Length, Encoding)
+			}
 		}
 
 	}
