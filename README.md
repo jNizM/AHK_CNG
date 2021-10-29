@@ -72,6 +72,8 @@ MsgBox % Crypt.Decrypt.String("AES", "ECB", "fcad715bd73b5cb0488f840f3bad7889050
 ; -> abcdefghijklmnop
 ```
 
+**HashCalc (Gui)
+[![HashCalc](https://raw.githubusercontent.com/jNizM/HashCalc/master/img/HashCalc_01.png)](https://github.com/jNizM/HashCalc)
 
 
 ## Questions / Bugs / Issues
@@ -79,8 +81,8 @@ Report any bugs or issues on the [AHK Thread](https://www.autohotkey.com/boards/
 
 
 ## Copyright and License
-[MIT License](LICENSE)
+[![MIT License](https://img.shields.io/github/license/jNizM/AHK_CNG.svg?style=flat-square&color=C3D69B)](LICENSE)
 
 
 ## Donations (PayPal)
-[Donations are appreciated if I could help you](https://www.paypal.me/smithz)
+[![PayPal](https://img.shields.io/badge/paypal-donate-B2A2C7.svg?style=flat-square)](https://www.paypal.me/smithz)
