@@ -78,11 +78,11 @@ MsgBox % Crypt.Decrypt.String("AES", "ECB", "fcad715bd73b5cb0488f840f3bad7889050
 
 
 ## Questions / Bugs / Issues
-Report any bugs or issues on the [AHK Thread](https://www.autohotkey.com/boards/viewtopic.php?f=6&t=23413). Same for any questions.
+Report any bugs or issues on the [AHK Thread](https://www.autohotkey.com/boards/viewtopic.php?f=6&t=96117) ([v1.1](https://www.autohotkey.com/boards/viewtopic.php?f=6&t=23413)). Same for any questions.
 
 
 ## Copyright and License
-[![MIT License](https://img.shields.io/github/license/jNizM/AHK_CNG.svg?style=flat-square&color=C3D69B)](LICENSE)
+
 
 
 ## Donations (PayPal)
