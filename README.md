@@ -26,25 +26,25 @@ CNG is designed to be extensible at many levels and cryptography agnostic in beh
 
 **Create a SHA-1 Hash from String**
 ```AutoHotkey
-MsgBox % Crypt.Hash.String("SHA1", "The quick brown fox jumps over the lazy dog")
+MsgBox Hash.String("SHA1", "The quick brown fox jumps over the lazy dog")
 ; -> 2fd4e1c67a2d28fced849ee1bb76e7391b93eb12
 ```
 
 **Create a SHA-256 Hash with HMAC from String**
 ```AutoHotkey
-MsgBox % Crypt.Hash.HMAC("SHA256", "The quick brown fox jumps over the lazy dog", "Secret Salt")
+MsgBox Hash.HMAC("SHA256", "The quick brown fox jumps over the lazy dog", "Secret Salt")
 ; -> 68dba4b3a6d5c36b6e3567e1a925fe87c7386162e8fb6e2e9f17ade4aa7dc262
 ```
 
 **Create a SHA-256 Hash from a File**
 ```AutoHotkey
-MsgBox % Crypt.Hash.File("SHA256", "C:\Program Files\AutoHotkey\AutoHotkey.exe")
-; -> 0a9964fe0e0fb3f0679df317a65f9945c474dab8c4370b45b93da64a8b201b9f
+MsgBox Hash.File("SHA256", "C:\Program Files\AutoHotkey\AutoHotkey.exe")
+; -> c93fde911140a7330f6d2d89bdb8e011b86153b43d64c7e2b66a741abacf9472
 ```
 
 **Create a PBKDF2 Hash with SHA-1, 1500 Iterations and a Keysize of 192 from a String**
 ```AutoHotkey
-MsgBox % Crypt.Hash.PBKDF2("SHA1", "The quick brown fox jumps over the lazy dog", "Secret Salt", 1500, 192)
+MsgBox Hash.PBKDF2("SHA1", "The quick brown fox jumps over the lazy dog", "Secret Salt", 1500, 192)
 ; -> 531c1bbae7c3de019d1f53adcac7d85bf2b04caba9d6d6d1
 ```
 
