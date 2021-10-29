@@ -72,7 +72,7 @@ MsgBox % Crypt.Decrypt.String("AES", "ECB", "fcad715bd73b5cb0488f840f3bad7889050
 ; -> abcdefghijklmnop
 ```
 
-**HashCalc (Gui)
+**HashCalc (Gui)**
 [![HashCalc](https://raw.githubusercontent.com/jNizM/HashCalc/master/img/HashCalc_01.png)](https://github.com/jNizM/HashCalc)
 
 
