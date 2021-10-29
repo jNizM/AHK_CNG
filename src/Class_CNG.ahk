@@ -1,4 +1,142 @@
-﻿; ========================================================================================================================================================================
+﻿; ===========================================================================================================================================================================
+
+/*
+	AutoHotkey wrapper for CNG (Cryptography API: Next Generation)
+
+	Author ....: jNizM
+	Released ..: 2016-09-16
+	Modified ..: 2021-10-29
+	License ...: MIT
+	GitHub ....: https://github.com/jNizM/AHK_CNG
+	Forum .....: https://www.autohotkey.com/boards/viewtopic.php?t=96117
+*/
+
+; SCRIPT DIRECTIVES =========================================================================================================================================================
+
+#Requires AutoHotkey v2.0-
+
+
+; ========================================================================================================================================================================
+
+
+class Encrypt extends CNG
+{
+
+	static String(AlgId, Mode, String, Key, IV := "", Encoding := "UTF-8", Output := "Base64")
+	{
+		static hAlgorithm := hKey := 0
+
+		try
+		{
+			; open an algorithm handle
+			hAlgorithm := this.BCrypt.OpenAlgorithmProvider(AlgId)
+
+			; set chaining mode
+			if (CHAIN_MODE := this.BCrypt.ChainingMode(Mode))
+				this.BCrypt.SetProperty(hAlgorithm, this.BCrypt.Constants.BCRYPT_CHAINING_MODE, CHAIN_MODE)
+
+			; generate the key from supplied input key bytes
+			KeyBuf := this.StrBuf(Key, Encoding)
+			hKey := this.BCrypt.GenerateSymmetricKey(hAlgorithm, KeyBuf, KeyBuf.Size - 1)
+
+			; calculate the block length for the IV
+			BLOCK_LENGTH := this.BCrypt.GetProperty(hAlgorithm, this.BCrypt.Constants.BCRYPT_BLOCK_LENGTH, 4)
+
+			; use the key to encrypt the plaintext buffer. for block sized messages, block padding will add an extra block
+			DataBuf := this.StrBuf(String, Encoding)
+			if (IV) {
+				IVBuf := Buffer(BLOCK_LENGTH, 0)
+				StrPut(IV, IVBuf, BLOCK_LENGTH, Encoding)
+				CIPHER_LENGTH := this.BCrypt.Encrypt(hKey, DataBuf, DataBuf.Size - 1, IVBuf, IVBuf.Size, &CIPHER_DATA, this.BCrypt.Constants.BCRYPT_BLOCK_PADDING)
+			}
+			else
+				CIPHER_LENGTH := this.BCrypt.Encrypt(hKey, DataBuf, DataBuf.Size - 1, 0, 0, &CIPHER_DATA, this.BCrypt.Constants.BCRYPT_BLOCK_PADDING)
+			
+			; convert binary data to string (base64 / hex / hexraw)
+			ENCRYPT := this.Crypt.BinaryToString(CIPHER_DATA, CIPHER_LENGTH, Output)
+		}
+		catch as Exception
+		{
+			; represents errors that occur during application execution
+			throw Exception
+		}
+		finally
+		{
+			; cleaning up resources
+			if (hKey)
+				this.BCrypt.DestroyKey(hKey)
+
+			if (hAlgorithm)
+				this.BCrypt.CloseAlgorithmProvider(hAlgorithm)
+		}
+
+		return ENCRYPT
+	}
+}
+
+
+; ===========================================================================================================================================================================
+
+
+class Decrypt extends CNG
+{
+
+	static String(AlgId, Mode, String, Key, IV := "", Encoding := "UTF-8", Input := "Base64")
+	{
+		static hAlgorithm := hKey := 0
+
+		try
+		{
+			; open an algorithm handle
+			hAlgorithm := this.BCrypt.OpenAlgorithmProvider(AlgId)
+
+			; set chaining mode
+			if (CHAIN_MODE := this.BCrypt.ChainingMode(Mode))
+				this.BCrypt.SetProperty(hAlgorithm, this.BCrypt.Constants.BCRYPT_CHAINING_MODE, CHAIN_MODE)
+
+			; generate the key from supplied input key bytes
+			KeyBuf := this.StrBuf(Key, Encoding)
+			hKey := this.BCrypt.GenerateSymmetricKey(hAlgorithm, KeyBuf, KeyBuf.Size - 1)
+
+			; convert encrypted string (base64 / hex / hexraw) to binary data
+			CIPHER_LENGTH := this.Crypt.StringToBinary(String, &CIPHER_DATA, Input)
+
+			; calculate the block length for the IV
+			BLOCK_LENGTH := this.BCrypt.GetProperty(hAlgorithm, this.BCrypt.Constants.BCRYPT_BLOCK_LENGTH, 4)
+
+			; use the key to encrypt the plaintext buffer. for block sized messages, block padding will add an extra block
+			if (IV) {
+				IVBuf := Buffer(BLOCK_LENGTH, 0)
+				StrPut(IV, IVBuf, BLOCK_LENGTH, Encoding)
+				DECRYPT_LENGTH := this.BCrypt.Decrypt(hKey, CIPHER_DATA, CIPHER_LENGTH, IVBuf, IVBuf.Size, &DECRYPT_DATA, this.BCrypt.Constants.BCRYPT_BLOCK_PADDING)
+			}
+			else
+				DECRYPT_LENGTH := this.BCrypt.Decrypt(hKey, CIPHER_DATA, CIPHER_LENGTH, 0, 0, &DECRYPT_DATA, this.BCrypt.Constants.BCRYPT_BLOCK_PADDING)
+
+			; receive the decrypted plaintext
+			DECRYPT := StrGet(DECRYPT_DATA, DECRYPT_LENGTH, Encoding)
+		}
+		catch as Exception
+		{
+			; represents errors that occur during application execution
+			throw Exception
+		}
+		finally
+		{
+			; cleaning up resources
+			if (hKey)
+				this.BCrypt.DestroyKey(hKey)
+
+			if (hAlgorithm)
+				this.BCrypt.CloseAlgorithmProvider(hAlgorithm)
+		}
+
+		return DECRYPT
+	}
+}
+
+
+; ===========================================================================================================================================================================
 
 
 class Hash extends CNG
@@ -251,6 +389,49 @@ class CNG
 
 		; ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		; //
+		; // FUNCTION NAME: BCrypt.Decrypt
+		; //
+		; // This function decrypts a block of data.
+		; //
+		; ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		static Decrypt(hKey, InputBuf, InputSize, IVBuf := 0, IVSize := 0, &OutputBuf := 0, Flags := 0)
+		{
+			NT_STATUS := DllCall("bcrypt\BCryptDecrypt", "Ptr",   hKey
+			                                           , "Ptr",   InputBuf
+													   , "UInt",  InputSize
+													   , "Ptr",   0
+													   , "Ptr",   IVBuf
+													   , "UInt",  IVSize
+													   , "Ptr",   0
+													   , "UInt",  0
+													   , "UInt*", &Result := 0
+													   , "UInt",  Flags
+													   , "UInt")
+
+			if (NT_STATUS != this.NT.SUCCESS)
+				throw Error(this.GetErrorMessage(NT_STATUS), -1)
+
+			OutputBuf := Buffer(Result, 0)
+			NT_STATUS := DllCall("bcrypt\BCryptDecrypt", "Ptr",   hKey
+			                                           , "Ptr",   InputBuf
+													   , "UInt",  InputSize
+													   , "Ptr",   0
+													   , "Ptr",   IVBuf
+													   , "UInt",  IVSize
+													   , "Ptr",   OutputBuf
+													   , "UInt",  OutputBuf.Size
+													   , "UInt*", &Result := 0
+													   , "UInt",  Flags
+													   , "UInt")
+
+			if (NT_STATUS = this.NT.SUCCESS)
+				return OutputBuf.Size
+			throw Error(this.GetErrorMessage(NT_STATUS), -1)
+		}
+
+
+		; ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		; //
 		; // FUNCTION NAME: BCrypt.DeriveKeyPBKDF2
 		; //
 		; // This function derives a key from a hash value by using the PBKDF2 key derivation algorithm as defined by RFC 2898.
@@ -315,6 +496,49 @@ class CNG
 
 		; ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		; //
+		; // FUNCTION NAME: BCrypt.Encrypt
+		; //
+		; // This function encrypts a block of data.
+		; //
+		; ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		static Encrypt(hKey, InputBuf, InputSize, IVBuf := 0, IVSize := 0, &OutputBuf := 0, Flags := 0)
+		{
+			NT_STATUS := DllCall("bcrypt\BCryptEncrypt", "Ptr",   hKey
+			                                           , "Ptr",   InputBuf
+													   , "UInt",  InputSize
+													   , "Ptr",   0
+													   , "Ptr",   IVBuf
+													   , "UInt",  IVSize
+													   , "Ptr",   0
+													   , "UInt",  0
+													   , "UInt*", &Result := 0
+													   , "UInt",  Flags
+													   , "UInt")
+
+			if (NT_STATUS != this.NT.SUCCESS)
+				throw Error(this.GetErrorMessage(NT_STATUS), -1)
+
+			OutputBuf := Buffer(Result, 0)
+			NT_STATUS := DllCall("bcrypt\BCryptEncrypt", "Ptr",   hKey
+			                                           , "Ptr",   InputBuf
+													   , "UInt",  InputSize
+													   , "Ptr",   0
+													   , "Ptr",   IVBuf
+													   , "UInt",  IVSize
+													   , "Ptr",   OutputBuf
+													   , "UInt",  OutputBuf.Size
+													   , "UInt*", &Result := 0
+													   , "UInt",  Flags
+													   , "UInt")
+
+			if (NT_STATUS = this.NT.SUCCESS)
+				return OutputBuf.Size
+			throw Error(this.GetErrorMessage(NT_STATUS), -1)
+		}
+
+
+		; ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		; //
 		; // FUNCTION NAME: BCrypt.FinishHash
 		; //
 		; // This function retrieves the hash or Message Authentication Code (MAC) value for the data accumulated from prior calls to BCrypt.HashData.
@@ -331,6 +555,30 @@ class CNG
 
 			if (NT_STATUS = this.NT.SUCCESS)
 				return Size
+			throw Error(this.GetErrorMessage(NT_STATUS), -1)
+		}
+
+
+		; ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		; //
+		; // FUNCTION NAME: BCrypt.GenerateSymmetricKey
+		; //
+		; // This function creates a key object for use with a symmetrical key encryption algorithm from a supplied key.
+		; //
+		; ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		static GenerateSymmetricKey(hAlgorithm, Buf := 0, Size := 0)
+		{
+			NT_STATUS := DllCall("bcrypt\BCryptGenerateSymmetricKey", "Ptr",  hAlgorithm
+			                                                        , "Ptr*", &hKey := 0
+																	, "Ptr",  0
+																	, "UInt", 0
+																	, "Ptr",  Buf
+																	, "UInt", Size
+																	, "UInt", Flags := 0
+																	, "UInt")
+
+			if (NT_STATUS = this.NT.SUCCESS)
+				return hKey
 			throw Error(this.GetErrorMessage(NT_STATUS), -1)
 		}
 
@@ -400,12 +648,38 @@ class CNG
 		}
 
 
+		; ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		; //
+		; // FUNCTION NAME: BCrypt.SetProperty
+		; //
+		; // This function sets the value of a named property for a CNG object.
+		; //
+		; ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		static SetProperty(hObject, Property, Input)
+		{
+			NT_STATUS := DllCall("bcrypt\BCryptSetProperty", "Ptr",  hObject
+			                                               , "Ptr",  StrPtr(Property)
+														   , "Ptr",  StrPtr(Input)
+														   , "UInt", StrLen(Input)
+														   , "UInt", Flags := 0
+														   , "UInt")
+
+			if (NT_STATUS = this.NT.SUCCESS)
+				return true
+			throw Error(this.GetErrorMessage(NT_STATUS), -1)
+		}
+
+
 		static GetErrorMessage(STATUS_CODE)
 		{
 			switch STATUS_CODE
 			{
+				case this.NT.AUTH_TAG_MISMATCH:
+					return "The computed authentication tag did not match the input authentication tag."
 				case this.NT.BUFFER_TOO_SMALL:
 					return "The buffer is too small to contain the entry. No information has been written to the buffer."
+				case this.NT.INVALID_BUFFER_SIZE:
+					return "The size of the buffer is invalid for the specified operation."
 				case this.NT.INVALID_HANDLE:
 					return "An invalid HANDLE was specified."
 				case this.NT.INVALID_PARAMETER:
@@ -476,13 +750,55 @@ class CNG
 
 		class NT
 		{
-			static SUCCESS           := 0x00000000
-			static BUFFER_TOO_SMALL  := 0xC0000023
-			static INVALID_HANDLE    := 0xC0000008
-			static INVALID_PARAMETER := 0xC000000D
-			static NO_MEMORY         := 0xC0000017
-			static NOT_FOUND         := 0xC0000225
-			static NOT_SUPPORTED     := 0xC00000BB
+			static SUCCESS             := 0x00000000
+			static AUTH_TAG_MISMATCH   := 0xC000A002
+			static BUFFER_TOO_SMALL    := 0xC0000023
+			static INVALID_BUFFER_SIZE := 0xC0000206
+			static INVALID_HANDLE      := 0xC0000008
+			static INVALID_PARAMETER   := 0xC000000D
+			static NO_MEMORY           := 0xC0000017
+			static NOT_FOUND           := 0xC0000225
+			static NOT_SUPPORTED       := 0xC00000BB
+		}
+
+
+		static EncryptionAlgorithm(Algorithm)
+		{
+			switch Algorithm
+			{
+				case "AES": return this.Constants.BCRYPT_AES_ALGORITHM
+				case "DES": return this.Constants.BCRYPT_DES_ALGORITHM
+				case "RC2": return this.Constants.BCRYPT_RC2_ALGORITHM
+				case "RC4": return this.Constants.BCRYPT_RC4_ALGORITHM
+				default: return ""
+			}
+		}
+
+
+		static ChainingMode(ChainMode)
+		{
+			switch ChainMode
+			{
+				case "CBC", "ChainingModeCBC": return this.Constants.BCRYPT_CHAIN_MODE_CBC
+				case "ECB", "ChainingModeECB": return this.Constants.BCRYPT_CHAIN_MODE_ECB
+				default: return ""
+			}
+		}
+
+
+		static HashAlgorithm(Algorithm)
+		{
+			switch Algorithm
+			{
+				case "MD2":               return this.Constants.BCRYPT_MD2_ALGORITHM
+				case "MD4":               return this.Constants.BCRYPT_MD4_ALGORITHM
+				case "MD5":               return this.Constants.BCRYPT_MD5_ALGORITHM
+				case "SHA1", "SHA-1":     return this.Constants.BCRYPT_SHA1_ALGORITHM
+				case "SHA256", "SHA-256": return this.Constants.BCRYPT_SHA256_ALGORITHM
+				case "SHA384", "SHA-384": return this.Constants.BCRYPT_SHA384_ALGORITHM
+				case "SHA512", "SHA-512": return this.Constants.BCRYPT_SHA512_ALGORITHM
+				default: return ""
+			}
 		}
 	}
 

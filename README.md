@@ -50,13 +50,13 @@ MsgBox Hash.PBKDF2("SHA1", "The quick brown fox jumps over the lazy dog", "Secre
 
 **Encrypt a String with AES + CBC and with Key + IV and Base64 Output**
 ```AutoHotkey
-MsgBox % Crypt.Encrypt.String("AES", "CBC", "abcdefghijklmnop", "1234567890123456", "1234567890123456")
+MsgBox Encrypt.String("AES", "CBC", "abcdefghijklmnop", "1234567890123456", "1234567890123456")
 ; -> Nn9CFFuC+/O84cV1NiwLYoyd25Z9nmWv16dIFKzf2b4=
 ```
 
 **Decrypt a String with AES + CBC and with Key + IV and Base64 Input**
 ```AutoHotkey
-MsgBox % Crypt.Decrypt.String("AES", "CBC", "Nn9CFFuC+/O84cV1NiwLYoyd25Z9nmWv16dIFKzf2b4=", "1234567890123456", "1234567890123456")
+MsgBox Decrypt.String("AES", "CBC", "Nn9CFFuC+/O84cV1NiwLYoyd25Z9nmWv16dIFKzf2b4=", "1234567890123456", "1234567890123456")
 ; -> abcdefghijklmnop
 ```
 
