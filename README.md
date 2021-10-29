@@ -82,7 +82,7 @@ Report any bugs or issues on the [AHK Thread](https://www.autohotkey.com/boards/
 
 
 ## Copyright and License
-
+[![MIT License](https://img.shields.io/github/license/jNizM/AHK_CNG.svg?style=flat-square&color=C3D69B)](LICENSE)
 
 
 ## Donations (PayPal)
