@@ -3,7 +3,7 @@ Cryptography API: Next Generation (CNG) is the long-term replacement for the Cry
 CNG is designed to be extensible at many levels and cryptography agnostic in behavior.
 
 [![AHK](https://img.shields.io/badge/ahk-2.0--beta.3%20(x64)-C3D69B.svg?style=flat-square)]()
-[![OS](https://img.shields.io/badge/ahk-2.0--beta.3-C3D69B.svg?style=flat-square)]()
+[![OS](https://img.shields.io/badge/os-windows%2011%20(x64)-C3D69B.svg?style=flat-square)]()
 
 
 ## Creating a Hash with CNG
