@@ -354,8 +354,8 @@ class CNG
 		static CloseAlgorithmProvider(hAlgorithm)
 		{
 			NT_STATUS := DllCall("bcrypt\BCryptCloseAlgorithmProvider", "Ptr",  hAlgorithm
-																	  , "UInt", Flags := 0
-																	  , "UInt")
+			                                                          , "UInt", Flags := 0
+			                                                          , "UInt")
 
 			if (NT_STATUS = this.NT.SUCCESS)
 				return true
@@ -373,13 +373,13 @@ class CNG
 		static CreateHash(hAlgorithm, Buf := 0, Size := 0)
 		{
 			NT_STATUS := DllCall("bcrypt\BCryptCreateHash", "Ptr",  hAlgorithm
-														  , "Ptr*", &hHash := 0
-														  , "Ptr",  0
-														  , "UInt", 0
-														  , "Ptr",  Buf
-														  , "UInt", Size
-														  , "UInt", Flags := 0 ; (this.Constants.BCRYPT_HASH_REUSABLE_FLAG)
-														  , "UInt")
+			                                              , "Ptr*", &hHash := 0
+			                                              , "Ptr",  0
+			                                              , "UInt", 0
+			                                              , "Ptr",  Buf
+			                                              , "UInt", Size
+			                                              , "UInt", Flags := 0 ; (this.Constants.BCRYPT_HASH_REUSABLE_FLAG)
+			                                              , "UInt")
 
 			if (NT_STATUS = this.NT.SUCCESS)
 				return hHash
@@ -398,15 +398,15 @@ class CNG
 		{
 			NT_STATUS := DllCall("bcrypt\BCryptDecrypt", "Ptr",   hKey
 			                                           , "Ptr",   InputBuf
-													   , "UInt",  InputSize
-													   , "Ptr",   0
-													   , "Ptr",   IVBuf
-													   , "UInt",  IVSize
-													   , "Ptr",   0
-													   , "UInt",  0
-													   , "UInt*", &Result := 0
-													   , "UInt",  Flags
-													   , "UInt")
+			                                           , "UInt",  InputSize
+			                                           , "Ptr",   0
+			                                           , "Ptr",   IVBuf
+			                                           , "UInt",  IVSize
+			                                           , "Ptr",   0
+			                                           , "UInt",  0
+			                                           , "UInt*", &Result := 0
+			                                           , "UInt",  Flags
+			                                           , "UInt")
 
 			if (NT_STATUS != this.NT.SUCCESS)
 				throw Error(this.GetErrorMessage(NT_STATUS), -1)
@@ -414,15 +414,15 @@ class CNG
 			OutputBuf := Buffer(Result, 0)
 			NT_STATUS := DllCall("bcrypt\BCryptDecrypt", "Ptr",   hKey
 			                                           , "Ptr",   InputBuf
-													   , "UInt",  InputSize
-													   , "Ptr",   0
-													   , "Ptr",   IVBuf
-													   , "UInt",  IVSize
-													   , "Ptr",   OutputBuf
-													   , "UInt",  OutputBuf.Size
-													   , "UInt*", &Result := 0
-													   , "UInt",  Flags
-													   , "UInt")
+			                                           , "UInt",  InputSize
+			                                           , "Ptr",   0
+			                                           , "Ptr",   IVBuf
+			                                           , "UInt",  IVSize
+			                                           , "Ptr",   OutputBuf
+			                                           , "UInt",  OutputBuf.Size
+			                                           , "UInt*", &Result := 0
+			                                           , "UInt",  Flags
+			                                           , "UInt")
 
 			if (NT_STATUS = this.NT.SUCCESS)
 				return OutputBuf.Size
@@ -445,14 +445,14 @@ class CNG
 
 			NT_STATUS := DllCall("bcrypt\BCryptDeriveKeyPBKDF2", "Ptr",   hAlgorithm
 			                                                   , "Ptr",   Passwd
-															   , "UInt",  Passwd.Size - 1
-															   , "Ptr",   Salt
-															   , "UInt",  Salt.Size - 1
-															   , "Int64", Iterations
-															   , "Ptr",   DKey
-															   , "UInt",  DerivedKey
-															   , "UInt",  Flags := 0
-															   , "UInt")
+			                                                   , "UInt",  Passwd.Size - 1
+			                                                   , "Ptr",   Salt
+			                                                   , "UInt",  Salt.Size - 1
+			                                                   , "Int64", Iterations
+			                                                   , "Ptr",   DKey
+			                                                   , "UInt",  DerivedKey
+			                                                   , "UInt",  Flags := 0
+			                                                   , "UInt")
 
 			if (NT_STATUS = this.NT.SUCCESS)
 				return DKey
@@ -505,15 +505,15 @@ class CNG
 		{
 			NT_STATUS := DllCall("bcrypt\BCryptEncrypt", "Ptr",   hKey
 			                                           , "Ptr",   InputBuf
-													   , "UInt",  InputSize
-													   , "Ptr",   0
-													   , "Ptr",   IVBuf
-													   , "UInt",  IVSize
-													   , "Ptr",   0
-													   , "UInt",  0
-													   , "UInt*", &Result := 0
-													   , "UInt",  Flags
-													   , "UInt")
+			                                           , "UInt",  InputSize
+			                                           , "Ptr",   0
+			                                           , "Ptr",   IVBuf
+			                                           , "UInt",  IVSize
+			                                           , "Ptr",   0
+			                                           , "UInt",  0
+			                                           , "UInt*", &Result := 0
+			                                           , "UInt",  Flags
+			                                           , "UInt")
 
 			if (NT_STATUS != this.NT.SUCCESS)
 				throw Error(this.GetErrorMessage(NT_STATUS), -1)
@@ -521,15 +521,15 @@ class CNG
 			OutputBuf := Buffer(Result, 0)
 			NT_STATUS := DllCall("bcrypt\BCryptEncrypt", "Ptr",   hKey
 			                                           , "Ptr",   InputBuf
-													   , "UInt",  InputSize
-													   , "Ptr",   0
-													   , "Ptr",   IVBuf
-													   , "UInt",  IVSize
-													   , "Ptr",   OutputBuf
-													   , "UInt",  OutputBuf.Size
-													   , "UInt*", &Result := 0
-													   , "UInt",  Flags
-													   , "UInt")
+			                                           , "UInt",  InputSize
+			                                           , "Ptr",   0
+			                                           , "Ptr",   IVBuf
+			                                           , "UInt",  IVSize
+			                                           , "Ptr",   OutputBuf
+			                                           , "UInt",  OutputBuf.Size
+			                                           , "UInt*", &Result := 0
+			                                           , "UInt",  Flags
+			                                           , "UInt")
 
 			if (NT_STATUS = this.NT.SUCCESS)
 				return OutputBuf.Size
@@ -548,10 +548,10 @@ class CNG
 		{
 			Buf := Buffer(Size, 0)
 			NT_STATUS := DllCall("bcrypt\BCryptFinishHash", "Ptr",  hHash
-														  , "Ptr",  Buf
-														  , "UInt", Size
-														  , "UInt", Flags := 0
-														  , "UInt")
+			                                              , "Ptr",  Buf
+			                                              , "UInt", Size
+			                                              , "UInt", Flags := 0
+			                                              , "UInt")
 
 			if (NT_STATUS = this.NT.SUCCESS)
 				return Size
@@ -570,12 +570,12 @@ class CNG
 		{
 			NT_STATUS := DllCall("bcrypt\BCryptGenerateSymmetricKey", "Ptr",  hAlgorithm
 			                                                        , "Ptr*", &hKey := 0
-																	, "Ptr",  0
-																	, "UInt", 0
-																	, "Ptr",  Buf
-																	, "UInt", Size
-																	, "UInt", Flags := 0
-																	, "UInt")
+			                                                        , "Ptr",  0
+			                                                        , "UInt", 0
+			                                                        , "Ptr",  Buf
+			                                                        , "UInt", Size
+			                                                        , "UInt", Flags := 0
+			                                                        , "UInt")
 
 			if (NT_STATUS = this.NT.SUCCESS)
 				return hKey
@@ -593,12 +593,12 @@ class CNG
 		static GetProperty(hObject, Property, Size)
 		{
 			NT_STATUS := DllCall("bcrypt\BCryptGetProperty", "Ptr",   hObject
-														   , "Ptr",   StrPtr(Property)
-														   , "Ptr*",  &Buf := 0
-														   , "UInt",  Size
-														   , "UInt*", &Result := 0
-														   , "UInt",  Flags := 0
-														   , "UInt")
+			                                               , "Ptr",   StrPtr(Property)
+			                                               , "Ptr*",  &Buf := 0
+			                                               , "UInt",  Size
+			                                               , "UInt*", &Result := 0
+			                                               , "UInt",  Flags := 0
+			                                               , "UInt")
 
 			if (NT_STATUS = this.NT.SUCCESS)
 				return Buf
@@ -616,10 +616,10 @@ class CNG
 		static HashData(hHash, Buf, Size)
 		{
 			NT_STATUS := DllCall("bcrypt\BCryptHashData", "Ptr",  hHash
-														, "Ptr",  Buf
-														, "UInt", Size
-														, "UInt", Flags := 0
-														, "UInt")
+			                                            , "Ptr",  Buf
+			                                            , "UInt", Size
+			                                            , "UInt", Flags := 0
+			                                            , "UInt")
 
 			if (NT_STATUS = this.NT.SUCCESS)
 				return true
@@ -637,10 +637,10 @@ class CNG
 		static OpenAlgorithmProvider(AlgId, Flags := 0)
 		{
 			NT_STATUS := DllCall("bcrypt\BCryptOpenAlgorithmProvider", "Ptr*", &hAlgorithm := 0
-																	 , "Str",  AlgId
-																	 , "Ptr",  Implementation := 0
-																	 , "UInt", Flags
-																	 , "UInt")
+			                                                         , "Str",  AlgId
+			                                                         , "Ptr",  Implementation := 0
+			                                                         , "UInt", Flags
+			                                                         , "UInt")
 
 			if (NT_STATUS = this.NT.SUCCESS)
 				return hAlgorithm
@@ -659,10 +659,10 @@ class CNG
 		{
 			NT_STATUS := DllCall("bcrypt\BCryptSetProperty", "Ptr",  hObject
 			                                               , "Ptr",  StrPtr(Property)
-														   , "Ptr",  StrPtr(Input)
-														   , "UInt", StrLen(Input)
-														   , "UInt", Flags := 0
-														   , "UInt")
+			                                               , "Ptr",  StrPtr(Input)
+			                                               , "UInt", StrLen(Input)
+			                                               , "UInt", Flags := 0
+			                                               , "UInt")
 
 			if (NT_STATUS = this.NT.SUCCESS)
 				return true
@@ -825,18 +825,18 @@ class CNG
 			static CRYPT_STRING_NOCRLF := 0x40000000
 
 			if !(DllCall("crypt32\CryptBinaryToStringW", "Ptr",   BufIn
-													   , "UInt",  SizeIn
-													   , "UInt",  (CRYPT_STRING.%Flags% | CRYPT_STRING_NOCRLF)
-													   , "Ptr",   0
-													   , "UInt*", &Size := 0))
+			                                           , "UInt",  SizeIn
+			                                           , "UInt",  (CRYPT_STRING.%Flags% | CRYPT_STRING_NOCRLF)
+			                                           , "Ptr",   0
+			                                           , "UInt*", &Size := 0))
 				throw Error("Can't compute the destination buffer size, error: " A_LastError, -1)
 
 			BufOut := Buffer(Size << 1, 0)
 			if !(DllCall("crypt32\CryptBinaryToStringW", "Ptr",   BufIn
-													   , "UInt",  SizeIn
-													   , "UInt",  (CRYPT_STRING.%Flags% | CRYPT_STRING_NOCRLF)
-													   , "Ptr",   BufOut
-													   , "UInt*", Size))
+			                                           , "UInt",  SizeIn
+			                                           , "UInt",  (CRYPT_STRING.%Flags% | CRYPT_STRING_NOCRLF)
+			                                           , "Ptr",   BufOut
+			                                           , "UInt*", Size))
 				throw Error("Can't convert source buffer to " Flags ", error: " A_LastError, -1)
 
 			return StrGet(BufOut)
@@ -856,21 +856,21 @@ class CNG
 
 			if !(DllCall("crypt32\CryptStringToBinaryW", "Ptr",   StrPtr(String)
 			                                           , "UInt",  0
-													   , "UInt",  CRYPT_STRING.%Flags%
-													   , "Ptr",   0
-													   , "UInt*", &Size := 0
-													   , "Ptr",   0
-													   , "Ptr",   0))
+			                                           , "UInt",  CRYPT_STRING.%Flags%
+			                                           , "Ptr",   0
+			                                           , "UInt*", &Size := 0
+			                                           , "Ptr",   0
+			                                           , "Ptr",   0))
 				throw Error("Can't compute the destination buffer size, error: " A_LastError, -1)
 
 			Binary := Buffer(Size, 0)
 			if !(DllCall("crypt32\CryptStringToBinaryW", "Ptr",   StrPtr(String)
 			                                           , "UInt",  0
-													   , "UInt",  CRYPT_STRING.%Flags%
-													   , "Ptr",   Binary
-													   , "UInt*", Binary.Size
-													   , "Ptr",   0
-													   , "Ptr",   0))
+			                                           , "UInt",  CRYPT_STRING.%Flags%
+			                                           , "Ptr",   Binary
+			                                           , "UInt*", Binary.Size
+			                                           , "Ptr",   0
+			                                           , "Ptr",   0))
 				throw Error("Can't convert source buffer to " Flags ", error: " A_LastError, -1)
 
 			return Binary.Size
