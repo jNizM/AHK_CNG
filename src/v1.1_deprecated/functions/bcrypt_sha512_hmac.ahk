@@ -37,12 +37,14 @@ bcrypt_sha512_hmac(string, hmac, encoding := "utf-8")
 		;	throw Exception("Memory allocation failed", -1)
 
 		; create a hash
-		VarSetCapacity(pbSecret, (StrPut(hmac, encoding) - 1) * ((encoding = "utf-16" || encoding = "cp1200") ? 2 : 1), 0) && cbSecret := StrPut(hmac, &pbSecret, encoding) - 1
+		VarSetCapacity(pbSecret, (StrPut(hmac, encoding) - 1) * ((encoding = "utf-16" || encoding = "cp1200") ? 2 : 1), 0)
+		cbSecret := (StrPut(hmac, &pbSecret, encoding) - 1) * ((encoding = "utf-16" || encoding = "cp1200") ? 2 : 1)
 		if (NT_STATUS := DllCall("bcrypt\BCryptCreateHash", "ptr", hAlg, "ptr*", hHash, "ptr", &pbHashObject, "uint", cbHashObject, "ptr", &pbSecret, "uint", cbSecret, "uint", 0) != 0)
 			throw Exception("BCryptCreateHash: " NT_STATUS, -1)
 
 		; hash some data
-		VarSetCapacity(pbInput, (StrPut(string, encoding) - 1) * ((encoding = "utf-16" || encoding = "cp1200") ? 2 : 1), 0) && cbInput := StrPut(string, &pbInput, encoding) - 1
+		VarSetCapacity(pbInput, (StrPut(string, encoding) - 1) * ((encoding = "utf-16" || encoding = "cp1200") ? 2 : 1), 0)
+		cbInput := (StrPut(string, &pbInput, encoding) - 1) * ((encoding = "utf-16" || encoding = "cp1200") ? 2 : 1)
 		if (NT_STATUS := DllCall("bcrypt\BCryptHashData", "ptr", hHash, "ptr", &pbInput, "uint", cbInput, "uint", 0) != 0)
 			throw Exception("BCryptHashData: " NT_STATUS, -1)
 

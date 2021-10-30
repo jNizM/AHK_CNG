@@ -40,7 +40,8 @@ bcrypt_md2(string, encoding := "utf-8")
 			throw Exception("BCryptCreateHash: " NT_STATUS, -1)
 
 		; hash some data
-		VarSetCapacity(pbInput, (StrPut(string, encoding) - 1) * ((encoding = "utf-16" || encoding = "cp1200") ? 2 : 1), 0) && cbInput := StrPut(string, &pbInput, encoding) - 1
+		VarSetCapacity(pbInput, (StrPut(string, encoding) - 1) * ((encoding = "utf-16" || encoding = "cp1200") ? 2 : 1), 0)
+		cbInput := (StrPut(string, &pbInput, encoding) - 1) * ((encoding = "utf-16" || encoding = "cp1200") ? 2 : 1)
 		if (NT_STATUS := DllCall("bcrypt\BCryptHashData", "ptr", hHash, "ptr", &pbInput, "uint", cbInput, "uint", 0) != 0)
 			throw Exception("BCryptHashData: " NT_STATUS, -1)
 

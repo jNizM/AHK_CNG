@@ -23,8 +23,10 @@ bcrypt_pbkdf2_sha256(password, salt, iterations := 4096, keysize := 32, encoding
 		;	throw Exception("Memory allocation failed", -1)
 
 		; derives a key from a hash value
-		VarSetCapacity(pbPass, (StrPut(password, encoding) - 1) * ((encoding = "utf-16" || encoding = "cp1200") ? 2 : 1), 0) && cbPass := StrPut(password, &pbPass, encoding) - 1
-		VarSetCapacity(pbSalt, (StrPut(salt,     encoding) - 1) * ((encoding = "utf-16" || encoding = "cp1200") ? 2 : 1), 0) && cbSalt := StrPut(salt,     &pbSalt, encoding) - 1
+		VarSetCapacity(pbPass, (StrPut(password, encoding) - 1) * ((encoding = "utf-16" || encoding = "cp1200") ? 2 : 1), 0)
+		cbPass := (StrPut(password, &pbPass, encoding) - 1) * ((encoding = "utf-16" || encoding = "cp1200") ? 2 : 1)
+		VarSetCapacity(pbSalt, (StrPut(salt,     encoding) - 1) * ((encoding = "utf-16" || encoding = "cp1200") ? 2 : 1), 0)
+		cbSalt := (StrPut(salt,     &pbSalt, encoding) - 1) * ((encoding = "utf-16" || encoding = "cp1200") ? 2 : 1)
 		if (NT_STATUS := DllCall("bcrypt\BCryptDeriveKeyPBKDF2", "ptr", hAlg, "ptr", &pbPass, "uint", cbPass, "ptr", &pbSalt, "uint", cbSalt, "int64", iterations, "ptr", &pbDKey, "uint", keysize, "uint", 0) != 0)
 			throw Exception("BCryptDeriveKeyPBKDF2: " NT_STATUS, -1)
 
