@@ -24,16 +24,16 @@ class Encrypt extends CNG
 
 	static String(AlgId, Mode, String, Key, IV := "", Encoding := "UTF-8", Output := "Base64")
 	{
-		static hAlgorithm := hKey := 0, IVBuf := 0, IVSize := 0
+		static hAlgorithm := 0, hKey := 0, IVBuf := 0, IVSize := 0
 
 		try
 		{
 			; verify the encryption algorithm
-			if !(this.BCrypt.EncryptionAlgorithm(AlgId))
+			if !(ALGORITHM := this.BCrypt.EncryptionAlgorithm(AlgId))
 				throw Error("Unrecognized encryption algorithm identifier: " AlgId, -1)
 
 			; open an algorithm handle
-			hAlgorithm := this.BCrypt.OpenAlgorithmProvider(AlgId)
+			hAlgorithm := this.BCrypt.OpenAlgorithmProvider(ALGORITHM)
 
 			; set chaining mode
 			if (CHAIN_MODE := this.BCrypt.ChainingMode(Mode))
@@ -79,16 +79,16 @@ class Encrypt extends CNG
 
 	static File(AlgId, Mode, FileNameIn, FileNameOut, Key, IV := "", Bytes := 1048576, Offset := 0, Length := -1, Encoding := "UTF-8")
 	{
-		static hAlgorithm := hKey := 0, IVBuf := 0, IVSize := 0
+		static hAlgorithm := 0, hKey := 0, IVBuf := 0, IVSize := 0
 
 		try
 		{
 			; verify the encryption algorithm
-			if !(this.BCrypt.EncryptionAlgorithm(AlgId))
+			if !(ALGORITHM := this.BCrypt.EncryptionAlgorithm(AlgId))
 				throw Error("Unrecognized encryption algorithm identifier: " AlgId, -1)
 
 			; open an algorithm handle
-			hAlgorithm := this.BCrypt.OpenAlgorithmProvider(AlgId)
+			hAlgorithm := this.BCrypt.OpenAlgorithmProvider(ALGORITHM)
 
 			; set chaining mode
 			if (CHAIN_MODE := this.BCrypt.ChainingMode(Mode))
@@ -167,16 +167,16 @@ class Decrypt extends CNG
 
 	static String(AlgId, Mode, String, Key, IV := "", Encoding := "UTF-8", Input := "Base64")
 	{
-		static hAlgorithm := hKey := 0, IVBuf := 0, IVSize := 0
+		static hAlgorithm := 0, hKey := 0, IVBuf := 0, IVSize := 0
 
 		try
 		{
 			; verify the encryption algorithm
-			if !(this.BCrypt.EncryptionAlgorithm(AlgId))
+			if !(ALGORITHM := this.BCrypt.EncryptionAlgorithm(AlgId))
 				throw Error("Unrecognized encryption algorithm identifier: " AlgId, -1)
 
 			; open an algorithm handle
-			hAlgorithm := this.BCrypt.OpenAlgorithmProvider(AlgId)
+			hAlgorithm := this.BCrypt.OpenAlgorithmProvider(ALGORITHM)
 
 			; set chaining mode
 			if (CHAIN_MODE := this.BCrypt.ChainingMode(Mode))
@@ -224,16 +224,16 @@ class Decrypt extends CNG
 
 	static File(AlgId, Mode, FileNameIn, FileNameOut, Key, IV := "", Bytes := 1048576, Offset := 0, Length := -1, Encoding := "UTF-8")
 	{
-		static hAlgorithm := hKey := 0, IVBuf := 0, IVSize := 0
+		static hAlgorithm := 0, hKey := 0, IVBuf := 0, IVSize := 0
 
 		try
 		{
 			; verify the encryption algorithm
-			if !(this.BCrypt.EncryptionAlgorithm(AlgId))
+			if !(ALGORITHM := this.BCrypt.EncryptionAlgorithm(AlgId))
 				throw Error("Unrecognized encryption algorithm identifier: " AlgId, -1)
 
 			; open an algorithm handle
-			hAlgorithm := this.BCrypt.OpenAlgorithmProvider(AlgId)
+			hAlgorithm := this.BCrypt.OpenAlgorithmProvider(ALGORITHM)
 
 			; set chaining mode
 			if (CHAIN_MODE := this.BCrypt.ChainingMode(Mode))
@@ -314,16 +314,16 @@ class Hash extends CNG
 
 	static String(AlgId, String, Encoding := "UTF-8", Output := "HEXRAW")
 	{
-		static hAlgorithm := hHash := 0
+		static hAlgorithm := 0, hHash := 0
 
 		try
 		{
 			; verify the hash algorithm identifier
-			if !(this.BCrypt.HashAlgorithm(AlgId))
+			if !(ALGORITHM := this.BCrypt.HashAlgorithm(AlgId))
 				throw Error("Unrecognized hash algorithm identifier: " AlgId, -1)
 
 			; open an algorithm handle
-			hAlgorithm := this.BCrypt.OpenAlgorithmProvider(AlgId)
+			hAlgorithm := this.BCrypt.OpenAlgorithmProvider(ALGORITHM)
 
 			; create a hash
 			hHash := this.BCrypt.CreateHash(hAlgorithm)
@@ -363,16 +363,16 @@ class Hash extends CNG
 
 	static File(AlgId, FileName, Bytes := 1048576, Offset := 0, Length := -1, Encoding := "UTF-8", Output := "HEXRAW")
 	{
-		static hAlgorithm := hHash := File := 0
+		static hAlgorithm := 0, hHash := 0, File := 0
 
 		try
 		{
 			; verify the hash algorithm identifier
-			if !(this.BCrypt.HashAlgorithm(AlgId))
+			if !(ALGORITHM := this.BCrypt.HashAlgorithm(AlgId))
 				throw Error("Unrecognized hash algorithm identifier: " AlgId, -1)
 
 			; open an algorithm handle
-			hAlgorithm := this.BCrypt.OpenAlgorithmProvider(AlgId)
+			hAlgorithm := this.BCrypt.OpenAlgorithmProvider(ALGORITHM)
 
 			; create a hash
 			hHash := this.BCrypt.CreateHash(hAlgorithm)
@@ -428,16 +428,16 @@ class Hash extends CNG
 
 	static HMAC(AlgId, String, Hmac, Encoding := "UTF-8", Output := "HEXRAW")
 	{
-		static hAlgorithm := hHash := 0
+		static hAlgorithm := 0, hHash := 0
 
 		try
 		{
 			; verify the hash algorithm identifier
-			if !(this.BCrypt.HashAlgorithm(AlgId))
+			if !(ALGORITHM := this.BCrypt.HashAlgorithm(AlgId))
 				throw Error("Unrecognized hash algorithm identifier: " AlgId, -1)
 
 			; open an algorithm handle
-			hAlgorithm := this.BCrypt.OpenAlgorithmProvider(AlgId, this.BCrypt.Constants.BCRYPT_ALG_HANDLE_HMAC_FLAG)
+			hAlgorithm := this.BCrypt.OpenAlgorithmProvider(ALGORITHM, this.BCrypt.Constants.BCRYPT_ALG_HANDLE_HMAC_FLAG)
 
 			; create a hash
 			Mac := this.StrBuf(Hmac, Encoding)
@@ -479,12 +479,12 @@ class Hash extends CNG
 
 	static PBKDF2(AlgId, Password, Salt, Iterations := 4096, KeySize := 256, Encoding := "UTF-8", Output := "HEXRAW")
 	{
-		static hAlgorithm := hHash := 0
+		static hAlgorithm := 0, hHash := 0
 
 		try
 		{
 			; verify the hash algorithm identifier
-			if !(this.BCrypt.HashAlgorithm(AlgId))
+			if !(ALGORITHM := this.BCrypt.HashAlgorithm(AlgId))
 				throw Error("Unrecognized hash algorithm identifier: " AlgId, -1)
 
 			; check key bit length
@@ -492,7 +492,7 @@ class Hash extends CNG
 				throw Error("The desired key bit length must be a multiple of 8!", -1)
 
 			; open an algorithm handle
-			hAlgorithm := this.BCrypt.OpenAlgorithmProvider(AlgId, this.BCrypt.Constants.BCRYPT_ALG_HANDLE_HMAC_FLAG)
+			hAlgorithm := this.BCrypt.OpenAlgorithmProvider(ALGORITHM, this.BCrypt.Constants.BCRYPT_ALG_HANDLE_HMAC_FLAG)
 
 			; derives a key from a hash value
 			PBKDF2_DATA := this.BCrypt.DeriveKeyPBKDF2(hAlgorithm, Password, Salt, Iterations, KeySize / 8, Encoding)
