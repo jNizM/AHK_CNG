@@ -8,20 +8,27 @@ CNG is designed to be extensible at many levels and cryptography agnostic in beh
 
 ## Creating a Hash with CNG
 
-### Hashing Algorithm
-* MD2, MD4, MD5
+### Hash Algorithm Identifiers
+* MD2
+* MD4
+* MD5
 * SHA1
-* SHA2 (SHA256, SHA384, SHA512)
+* SHA256
+* SHA384
+* SHA512
 * PBKDF2
 
 
 ## Encrypt and Decrypt with CNG
 
-### Tested Encryption Algorithm
-* AES (EBC / CBC / CFB) with Key + IV
-* DES (ECB / CBC)
-* RC2
-* RC4
+### Encryption Algorithm Identifiers
+* AES + ECB [Key]
+* AES + CBC [Key + IV]
+* AES + CFB [Key + IV]
+* DES + ECB [Key]
+* DES + CBC [Key + IV]
+* RC2 [Key]
+* RC4 [Key]
 
 
 
@@ -63,16 +70,14 @@ MsgBox Decrypt.String("AES", "CBC", "Nn9CFFuC+/O84cV1NiwLYoyd25Z9nmWv16dIFKzf2b4
 ; -> abcdefghijklmnop
 ```
 
-**Encrypt a String with AES + ECB + Key and Hexraw Output**
+**Encrypt a File with AES + ECB with Key**
 ```AutoHotkey
-MsgBox % Crypt.Encrypt.String("AES", "ECB", "abcdefghijklmnop", "1234567890123456",,, "HEXRAW")
-; -> fcad715bd73b5cb0488f840f3bad7889050187a0cde5a9872cbab091ab73e553
+Encrypt.File("AES", "ECB", "test.txt", "test.enc", "1234567890123456")
 ```
 
-**Decrypt a String with AES + ECB + Key and Hexraw Input**
+**Decrypt a File with AES + ECB with Key**
 ```AutoHotkey
-MsgBox % Crypt.Decrypt.String("AES", "ECB", "fcad715bd73b5cb0488f840f3bad7889050187a0cde5a9872cbab091ab73e553", "1234567890123456",,, "HEXRAW")
-; -> abcdefghijklmnop
+Decrypt.File("AES", "ECB", "test.enc", "test.txt", "1234567890123456")
 ```
 
 **HashCalc (Gui)**

@@ -5,7 +5,7 @@
 
 	Author ....: jNizM
 	Released ..: 2016-09-16
-	Modified ..: 2021-11-02
+	Modified ..: 2021-11-03
 	License ...: MIT
 	GitHub ....: https://github.com/jNizM/AHK_CNG
 	Forum .....: https://www.autohotkey.com/boards/viewtopic.php?t=96117
@@ -75,6 +75,87 @@ class Encrypt extends CNG
 
 		return ENCRYPT
 	}
+
+
+	static File(AlgId, Mode, FileNameIn, FileNameOut, Key, IV := "", Bytes := 1048576, Offset := 0, Length := -1, Encoding := "UTF-8")
+	{
+		static hAlgorithm := hKey := 0, IVBuf := 0, IVSize := 0
+
+		try
+		{
+			; verify the encryption algorithm
+			if !(this.BCrypt.EncryptionAlgorithm(AlgId))
+				throw Error("Unrecognized encryption algorithm identifier: " AlgId, -1)
+
+			; open an algorithm handle
+			hAlgorithm := this.BCrypt.OpenAlgorithmProvider(AlgId)
+
+			; set chaining mode
+			if (CHAIN_MODE := this.BCrypt.ChainingMode(Mode))
+				this.BCrypt.SetProperty(hAlgorithm, this.BCrypt.Constants.BCRYPT_CHAINING_MODE, CHAIN_MODE)
+
+			; generate the key from supplied input key bytes
+			KeyBuf := this.StrBuf(Key, Encoding)
+			hKey := this.BCrypt.GenerateSymmetricKey(hAlgorithm, KeyBuf, KeyBuf.Size - 1)
+
+			; calculate the block length for the IV
+			BLOCK_LENGTH := this.BCrypt.GetProperty(hAlgorithm, this.BCrypt.Constants.BCRYPT_BLOCK_LENGTH, 4)
+
+			; use the key to encrypt the plaintext buffer. for block sized messages, block padding will add an extra block
+			if (IV) {
+				IVBuf := Buffer(BLOCK_LENGTH, 0)
+				StrPut(IV, IVBuf, BLOCK_LENGTH, Encoding)
+				IVSize := IVBuf.Size
+			}
+
+			if !(FileIn := FileOpen(FileNameIn, "r", Encoding))
+				throw Error("Failed to open file: " FileNameIn, -1)
+			if !(FileOut := FileOpen(FileNameOut, "rw", Encoding))
+				throw Error("Failed to create file: " FileNameOut, -1)
+
+			FileOut.Seek(0)
+			Length := Length < 0 ? FileIn.Length - Offset : Length
+			Data := Buffer(Bytes)
+			if ((Offset + Length) > FileIn.Length)
+				throw Error("Invalid parameters offset / length!", -1)
+			while (Length > Bytes) && (Dataread := FileIn.RawRead(Data, Bytes))
+			{
+				CIPHER_LENGTH := this.BCrypt.Encrypt(hKey, Data, Dataread, IVBuf, IVSize, &CIPHER_DATA, this.BCrypt.Constants.BCRYPT_BLOCK_PADDING)
+				FileOut.RawWrite(CIPHER_DATA, CIPHER_LENGTH)
+				Length -= Dataread
+			}
+			if (Length > 0)
+			{
+				if (Dataread := FileIn.RawRead(Data, Length))
+				{
+					CIPHER_LENGTH := this.BCrypt.Encrypt(hKey, Data, Dataread, IVBuf, IVSize, &CIPHER_DATA, this.BCrypt.Constants.BCRYPT_BLOCK_PADDING)
+					FileOut.RawWrite(CIPHER_DATA, CIPHER_LENGTH)
+				}
+			}
+		}
+		catch as Exception
+		{
+			; represents errors that occur during application execution
+			throw Exception
+		}
+		finally
+		{
+			; cleaning up resources
+			if (FileIn)
+				FileIn.Close()
+
+			if (FileOut)
+				FileOut.Close()
+
+			if (hKey)
+				this.BCrypt.DestroyKey(hKey)
+
+			if (hAlgorithm)
+				this.BCrypt.CloseAlgorithmProvider(hAlgorithm)
+		}
+
+		return true
+	}
 }
 
 
@@ -86,7 +167,7 @@ class Decrypt extends CNG
 
 	static String(AlgId, Mode, String, Key, IV := "", Encoding := "UTF-8", Input := "Base64")
 	{
-		static hAlgorithm := hKey := 0
+		static hAlgorithm := hKey := 0, IVBuf := 0, IVSize := 0
 
 		try
 		{
@@ -138,6 +219,89 @@ class Decrypt extends CNG
 		}
 
 		return DECRYPT
+	}
+
+
+	static File(AlgId, Mode, FileNameIn, FileNameOut, Key, IV := "", Bytes := 1048576, Offset := 0, Length := -1, Encoding := "UTF-8")
+	{
+		static hAlgorithm := hKey := 0, IVBuf := 0, IVSize := 0
+
+		try
+		{
+			; verify the encryption algorithm
+			if !(this.BCrypt.EncryptionAlgorithm(AlgId))
+				throw Error("Unrecognized encryption algorithm identifier: " AlgId, -1)
+
+			; open an algorithm handle
+			hAlgorithm := this.BCrypt.OpenAlgorithmProvider(AlgId)
+
+			; set chaining mode
+			if (CHAIN_MODE := this.BCrypt.ChainingMode(Mode))
+				this.BCrypt.SetProperty(hAlgorithm, this.BCrypt.Constants.BCRYPT_CHAINING_MODE, CHAIN_MODE)
+
+			; generate the key from supplied input key bytes
+			KeyBuf := this.StrBuf(Key, Encoding)
+			hKey := this.BCrypt.GenerateSymmetricKey(hAlgorithm, KeyBuf, KeyBuf.Size - 1)
+
+			; calculate the block length for the IV
+			BLOCK_LENGTH := this.BCrypt.GetProperty(hAlgorithm, this.BCrypt.Constants.BCRYPT_BLOCK_LENGTH, 4)
+
+			; use the key to encrypt the plaintext buffer. for block sized messages, block padding will add an extra block
+			if (IV) {
+				IVBuf := Buffer(BLOCK_LENGTH, 0)
+				StrPut(IV, IVBuf, BLOCK_LENGTH, Encoding)
+				IVSize := IVBuf.Size
+			}
+
+			if !(FileIn := FileOpen(FileNameIn, "r", Encoding))
+				throw Error("Failed to open file: " FileNameIn, -1)
+			if !(FileOut := FileOpen(FileNameOut, "rw", Encoding))
+				throw Error("Failed to create file: " FileNameOut, -1)
+
+			FileOut.Seek(0)
+			Length := Length < 0 ? FileIn.Length - Offset : Length
+			Data := Buffer(Bytes)
+			if ((Offset + Length) > FileIn.Length)
+				throw Error("Invalid parameters offset / length!", -1)
+			while (Length > Bytes) && (Dataread := FileIn.RawRead(Data, Bytes))
+			{
+				DECRYPT_LENGTH := this.BCrypt.Decrypt(hKey, Data, Dataread, IVBuf, IVSize, &DECRYPT_DATA, this.BCrypt.Constants.BCRYPT_BLOCK_PADDING)
+				DECRYPT := StrGet(DECRYPT_DATA, DECRYPT_LENGTH, Encoding)
+				FileOut.Write(DECRYPT)
+				Length -= Dataread
+			}
+			if (Length > 0)
+			{
+				if (Dataread := FileIn.RawRead(Data, Length))
+				{
+					DECRYPT_LENGTH := this.BCrypt.Decrypt(hKey, Data, Length, IVBuf, IVSize, &DECRYPT_DATA, this.BCrypt.Constants.BCRYPT_BLOCK_PADDING)
+					DECRYPT := StrGet(DECRYPT_DATA, DECRYPT_LENGTH, Encoding)
+					FileOut.Write(DECRYPT)
+				}
+			}
+		}
+		catch as Exception
+		{
+			; represents errors that occur during application execution
+			throw Exception
+		}
+		finally
+		{
+			; cleaning up resources
+			if (FileIn)
+				FileIn.Close()
+
+			if (FileOut)
+				FileOut.Close()
+
+			if (hKey)
+				this.BCrypt.DestroyKey(hKey)
+
+			if (hAlgorithm)
+				this.BCrypt.CloseAlgorithmProvider(hAlgorithm)
+		}
+
+		return true
 	}
 }
 
@@ -195,7 +359,6 @@ class Hash extends CNG
 
 		return HASH
 	}
-
 
 
 	static File(AlgId, FileName, Bytes := 1048576, Offset := 0, Length := -1, Encoding := "UTF-8", Output := "HEXRAW")
@@ -400,7 +563,7 @@ class CNG
 			                                              , "UInt", 0
 			                                              , "Ptr",  Buf
 			                                              , "UInt", Size
-			                                              , "UInt", Flags := 0 ; (this.Constants.BCRYPT_HASH_REUSABLE_FLAG)
+			                                              , "UInt", Flags := 0
 			                                              , "UInt")
 
 			if (NT_STATUS = this.NT.SUCCESS)
